@@ -1,0 +1,30 @@
+<html>
+<head><titel> Hi </titel></head>
+<body>
+
+<script type="text/javascript" src="qrc:/qwebchannel.js"></script>
+<script type="text/javascript">
+new QWebChannel(qt.webChannelTransport, function(channel) {
+    // all published objects are available in channel.objects under
+    // the identifier set in their attached WebChannel.id property
+    var foo = channel.objects.foo;
+    var dManager = channel.objects.bar;
+
+    // access a property
+    alert(foo.hello);
+
+    // connect to a signal
+    foo.someSignal.connect(function(message) {
+        alert("Got signal: " + message);
+    });
+
+    // invoke a method, and receive the return value asynchronously
+       foo.someMetod("bar", function(ret) {
+       alert("Got return value: " + ret);
+    });
+});
+</script>
+
+</body> 
+
+</html>

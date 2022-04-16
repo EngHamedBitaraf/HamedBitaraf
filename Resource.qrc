@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>go.js</file>
+        <file>main.qml</file>
+        <file>orgChartEditor.html</file>
+        <file>qwebchannel.js</file>
+        <file>image/Radar0.jpg</file>
+        <file>image/Radar1.jpg</file>
+        <file>image/Radar2.jpg</file>
+        <file>image/Radar4.jpg</file>
+        <file>image/Radar3.jpg</file>
+        <file>image/Radar5.jpg</file>
+        <file>image/Radar6.jpg</file>
+        <file>image/Radar7.jpg</file>
+        <file>data.json</file>
+        <file>jquery-3.6.0.min.js</file>
+    </qresource>
+</RCC>
