@@ -13,9 +13,11 @@
       // For details, see https://gojs.net/latest/intro/buildingObjects.html
       const $ = go.GraphObject.make;  // for conciseness in defining templates
 
-      myDiagram =
+
+      myFullDiagram =
         $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
           {
+
             maxSelectionCount: 1, // users can select only one part at a time
             layout:
               $(go.TreeLayout,
@@ -29,16 +31,24 @@
                   alternateAngle: 90,
                   alternateLayerSpacing: 35,
                   alternateAlignment: go.TreeLayout.AlignmentBus,
+                  alternatePortSpot :new go.Spot(0.8,255,10,0),
                   alternateNodeSpacing: 20
                 }),
            "undoManager.isEnabled": true // enable undo & redo
           });
 
+
+
+      var pinkgrad = $(go.Brush, "Linear", { 0: "rgb(255, 0, 0)", 1: "rgb(255, 0, 0)" });
+      function genderBrushConverter(gender) {
+              if (parent === null) return pinkgrad;
+              return "blue";
+            }
       // manage boss info manually when a node or link is deleted from the diagram
-      myDiagram.addDiagramListener("SelectionDeleting", e => {
+      myFullDiagram.addDiagramListener("SelectionDeleting", e => {
         var part = e.subject.first(); // e.subject is the myDiagram.selection collection,
         // so we'll get the first since we know we only have one selection
-        myDiagram.startTransaction("clear boss");
+        myFullDiagram.startTransaction("clear boss");
         if (part instanceof go.Node) {
           var it = part.findTreeChildrenNodes(); // find all child nodes
           while (it.next()) { // now iterate through them and clear out the boss information
@@ -53,18 +63,18 @@
           if (bossText === null) return;
           bossText.text = "";
         }
-        myDiagram.commitTransaction("clear boss");
+        myFullDiagram.commitTransaction("clear boss");
       });
 
       var levelColors = ["#AC193D", "#2672EC", "#8C0095", "#5133AB",
         "#008299", "#D24726", "#008A00", "#094AB2"];
 
       // override TreeLayout.commitNodes to also modify the background brush based on the tree depth level
-      myDiagram.layout.commitNodes = function() {
-        go.TreeLayout.prototype.commitNodes.call(myDiagram.layout);  // do the standard behavior
+      myFullDiagram.layout.commitNodes = function() {
+        go.TreeLayout.prototype.commitNodes.call(myFullDiagram.layout);  // do the standard behavior
         // then go through all of the vertexes and set their corresponding node's Shape.fill
         // to a brush dependent on the TreeVertex.level value
-        myDiagram.layout.network.vertexes.each(v => {
+        myFullDiagram.layout.network.vertexes.each(v => {
           if (v.node) {
             var level = v.level % (levelColors.length);
             var color = levelColors[level];
@@ -87,26 +97,55 @@
 
       // This converter is used by the Picture.
       function findHeadShot(id_image) {
-        return "qrc:/image/Radar" + id_image + ".jpg"
+        return "qrc:/image/Radar" + id_image + ".jpg";
       }
-
+       function mayWorkFor(node1 , node2){
+            if (!(node1 instanceof go.Node)) return false;
+            if (node1===node2) return false;
+            if (node2.isInTreeof(node1)) return false;
+            return true
+        }
       // define the Node template
-      myDiagram.nodeTemplate =
+       var nodeTemplate =
         $(go.Node, "Auto",
           { // handle dragging a Node onto a Node to (maybe) change the reporting relationship
-
+          mouseDragEnter: (e, node, prev) => {
+                        var diagram = node.diagram;
+                        var selnode = diagram.selection.first();
+                        if (!mayWorkFor(selnode, node)) return;
+                        var shape = node.findObject("SHAPE");
+                        if (shape) shape.fill = "darkred";
+                      },
+                      mouseDragLeave: (e, node, next) => {
+                        var shape = node.findObject("SHAPE");
+                        if (shape) shape.fill = graygrad;
+                      },
+                      mouseDrop: (e, node) => {
+                        var diagram = node.diagram;
+                        var selnode = diagram.selection.first();  // assume just one Node in selection
+                        if (mayWorkFor(selnode, node)) {
+                          // find any existing link into the selected node
+                          var link = selnode.findTreeParentLink();
+                          if (link !== null) {  // reconnect any existing link
+                            link.fromNode = node;
+                          } else {  // else create a new link
+                            diagram.toolManager.linkingTool.insertLink(node, node.port, selnode, selnode.port);
+                          }
+                        }
+                      }
           },
           // for sorting, have the Node.text be the data.name
           new go.Binding("text", "name"),
           // bind the Part.layerName to control the Node's layer depending on whether it isSelected
           new go.Binding("layerName", "isSelected", sel => sel ? "Foreground" : "").ofObject(),
           // define the node's outer shape
-          $(go.Shape, "Rectangle",
+          $(go.Shape, "RoundedRectangle",
             {
-              name: "SHAPE", fill: "#334566", stroke: 'white', strokeWidth: 3.5,
+              name: "SHAPE", fill: pinkgrad, stroke: 'white', strokeWidth: 3.5,
               // set the port properties:
-              portId: "",  cursor: "pointer"
-            }),
+              portId: "" ,cursor: "pointer"
+            },
+             new go.Binding("fill", "parent", genderBrushConverter)),
           $(go.Panel, "Horizontal",
             $(go.Picture,
               {
@@ -156,15 +195,21 @@
                   editable: true,  // by default newlines are allowed
                   minSize: new go.Size(10, 14)
                 },
-                new go.Binding("text", "comments").makeTwoWay())
-            )  // end Table Panel
-          ) // end Horizontal Panel
+                new go.Binding("text", "comments").makeTwoWay()),
 
+            ),  // end Table Panel
+
+            ), // end Horizontal Panel
+             $("TreeExpanderButton",{alignment :go.Spot.Bottom})
         );  // end Node
+
+
+        myFullDiagram.nodeTemplate = nodeTemplate;
+
 
       // the context menu allows users to make a position vacant,
       // remove a role and reassign the subtree, or remove a department
-      myDiagram.nodeTemplate.contextMenu =
+      myFullDiagram.nodeTemplate.contextMenu =
         $("ContextMenu",
           $("ContextMenuButton",
             $(go.TextBlock, "Vacate Position"),
@@ -173,11 +218,11 @@
                 var node = obj.part.adornedPart;
                 if (node !== null) {
                   var thisemp = node.data;
-                  myDiagram.startTransaction("vacate");
+                  myFullDiagram.startTransaction("vacate");
                   // update the key, name, and comments
-                  myDiagram.model.setDataProperty(thisemp, "name", "(Vacant)");
-                  myDiagram.model.setDataProperty(thisemp, "comments", "");
-                  myDiagram.commitTransaction("vacate");
+                  myFullDiagram.model.setDataProperty(thisemp, "name", "(Vacant)");
+                  myFullDiagram.model.setDataProperty(thisemp, "comments", "");
+                  myFullDiagram.commitTransaction("vacate");
                 }
               }
             }
@@ -189,16 +234,16 @@
                 // reparent the subtree to this node's boss, then remove the node
                 var node = obj.part.adornedPart;
                 if (node !== null) {
-                  myDiagram.startTransaction("reparent remove");
+                  myFullDiagram.startTransaction("reparent remove");
                   var chl = node.findTreeChildrenNodes();
                   // iterate through the children and set their parent key to our selected node's parent key
                   while (chl.next()) {
                     var emp = chl.value;
-                    myDiagram.model.setParentKeyForNodeData(emp.data, node.findTreeParentNode().data.key);
+                    myFullDiagram.model.setParentKeyForNodeData(emp.data, node.findTreeParentNode().data.key);
                   }
                   // and now remove the selected node itself
-                  myDiagram.model.removeNodeData(node.data);
-                  myDiagram.commitTransaction("reparent remove");
+                  myFullDiagram.model.removeNodeData(node.data);
+                  myFullDiagram.commitTransaction("reparent remove");
                 }
               }
             }
@@ -210,9 +255,9 @@
                 // remove the whole subtree, including the node itself
                 var node = obj.part.adornedPart;
                 if (node !== null) {
-                  myDiagram.startTransaction("remove dept");
-                  myDiagram.removeParts(node.findTreeParts());
-                  myDiagram.commitTransaction("remove dept");
+                  myFullDiagram.startTransaction("remove dept");
+                  myFullDiagram.removeParts(node.findTreeParts());
+                  myFullDiagram.commitTransaction("remove dept");
                 }
               }
             }
@@ -225,10 +270,10 @@
              var foo =channel.objects.foo;
             var dManager = channel.objects.bar;
             jQuery.getJSON(foo.hello,function(data){
-            myDiagram.model =new go.TreeModel(data)});
+            myFullDiagram.model =new go.TreeModel(data)});
             });
       // define the Link template
-      myDiagram.linkTemplate =
+      myFullDiagram.linkTemplate =
         $(go.Link, go.Link.Orthogonal,
           { corner: 20 },
           $(go.Shape, { strokeWidth: 1.5, stroke: "#141B41" }));  // the link shape
@@ -238,7 +283,7 @@
 
 
       // support editing the properties of the selected person in HTML
-      if (window.Inspector) myInspector = new Inspector("myInspector", myDiagram,
+      if (window.Inspector) myInspector = new Inspector("myInspector", myFullDiagram,
         {
           properties: {
             "key": { readOnly: true },
@@ -251,16 +296,52 @@
         });
 
       // Setup zoom to fit button
-      document.getElementById('zoomToFit').addEventListener('click', () => myDiagram.commandHandler.zoomToFit());
+      document.getElementById('zoomToFit').addEventListener('click', () => myFullDiagram.commandHandler.zoomToFit());
 
       document.getElementById('centerRoot').addEventListener('click', () => {
-        myDiagram.scale = 1;
-        myDiagram.commandHandler.scrollToPart(myDiagram.findNodeForKey(1));
+        myFullDiagram.scale = 1;
+        myFullDiagram.commandHandler.scrollToPart(myFullDiagram.findNodeForKey(1));
       });
     } // end init
+    function searchDiagram() {  // called by button
+          var input = document.getElementById("mySearch");
+          if (!input) return;
+          myFullDiagram.focus();
+
+          myFullDiagram.startTransaction("highlight search");
+
+          if (input.value) {
+            // search four different data properties for the string, any of which may match for success
+            // create a case insensitive RegExp from what the user typed
+            var safe = input.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            var regex = new RegExp(safe, "i");
+            var results = myFullDiagram.findNodesByExample({ name: regex },
+              { nation: regex },
+              { title: regex },
+              { headOf: regex });
+            myFullDiagram.highlightCollection(results);
+            // try to center the diagram at the first node that was found
+            if (results.count > 0) myFullDiagram.centerRect(results.first().actualBounds);
+          } else {  // empty string only clears highlighteds collection
+            myFullDiagram.clearHighlighteds();
+          }
+
+          myFullDiagram.commitTransaction("highlight search");
+        }
     window.addEventListener('DOMContentLoaded', init);
   </script>
 <style>
+input[type=search] {
+  width: 80%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+   border-radius:12px;
+  border: 3px solid #CBA135;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+  outline: none;
+}
     .btton {
         background-color:#CBA135;
         border:none;
@@ -285,7 +366,9 @@
 <div id="sample">
   <div id="myDiagramDiv" style="background-color: rgb(136, 212, 152); border: 1px solid black; border-radius:12px;height: 570px; position: relative; cursor: auto;"><canvas tabindex="0" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 551px; cursor: auto;" width="1054" height="551">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 1054px; height: 568px; z-index: 1;"><div style="position: absolute; width: 1687.5px; height: 1px;"></div></div></div>
   <p><button id="zoomToFit" class=btton>Zoom to Fit</button> <button id="centerRoot" class=btton>Center on root</button></p>
-  <div>
+  <input id="mySearch" onkeypress="if (event.keyCode === 13) searchDiagram()" type="search">
+  <button class=btton onclick="searchDiagram()">Search</button>
+    <div>
     <div id="myInspector" class="inspector"></div>
   </div>
 
