@@ -263,22 +263,11 @@
             }
           )
         );
-
-        new QWebChannel(qt.webChannelTransport, function (channel) {
-            // all published objects are available in channel.objects under
-            // the identifier set in their attached WebChannel.id property
-             var foo =channel.objects.foo;
-            var dManager = channel.objects.bar;
-            jQuery.getJSON(foo.hello,function(data){
-            myFullDiagram.model =new go.TreeModel(data)});
-            });
-      // define the Link template
-      myFullDiagram.linkTemplate =
-        $(go.Link, go.Link.Orthogonal,
-          { corner: 20 },
-          $(go.Shape, { strokeWidth: 1.5, stroke: "#141B41" }));  // the link shape
-
-      // read in the JSON-format data from the "mySavedModel" element
+        // define the Link template
+        myFullDiagram.linkTemplate =
+          $(go.Link, go.Link.Orthogonal,
+            { corner: 20 },
+            $(go.Shape, { strokeWidth: 1.5, stroke: "#141B41" }));  // the link shape
 
 
 
@@ -294,6 +283,23 @@
             "comments": {}
           }
         });
+        var foo;
+        new QWebChannel(qt.webChannelTransport, function (channel) {
+            // all published objects are available in channel.objects under
+            // the identifier set in their attached WebChannel.id property
+                foo =channel.objects.foo;
+                var dManager = channel.objects.bar;
+
+                 myFullDiagram.model =new go.TreeModel(foo.valueJson)
+
+                 //jQuery.getJSON(foo.filedata,function(data){
+                 //myFullDiagram.model =new go.TreeModel(data)});
+            });
+
+      // read in the JSON-format data from the "mySavedModel" element
+
+
+
 
       // Setup zoom to fit button
       document.getElementById('zoomToFit').addEventListener('click', () => myFullDiagram.commandHandler.zoomToFit());
@@ -328,6 +334,7 @@
 
           myFullDiagram.commitTransaction("highlight search");
         }
+
     window.addEventListener('DOMContentLoaded', init);
   </script>
 <style>

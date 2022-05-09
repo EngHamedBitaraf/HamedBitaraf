@@ -24,7 +24,8 @@ Item {
 //            return datamanager.getdata();
 //        }
         ///get path json file  set  property  string hello
-        property  string hello: datamanager.getdata()
+        property  var valueJson: datamanager.readjson()
+        property string filedata: datamanager.getdata()
     }
     ///end
     ///create web view for dispalay file html in widget

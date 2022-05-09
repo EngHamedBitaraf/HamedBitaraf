@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     qmlwidget=QWidget::createWindowContainer(view);
     /// horizontalLayout creat in ui
     ui->horizontalLayout->addWidget(qmlwidget);
+
 }
 
 MainWindow::~MainWindow()

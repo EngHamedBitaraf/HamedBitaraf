@@ -3,7 +3,8 @@
 
 // class Qobject for conccat to qml
 #include <QObject>
-
+#include <QJsonValue>
+#include <QJsonObject>
 class DataManager : public QObject
 {
     Q_OBJECT
@@ -17,6 +18,7 @@ public slots:
      /// function slot for address html and  data path
     QString htmlURL();
     QString getdata();
+    QJsonValue readjson();
 
 };
 

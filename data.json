@@ -1,23 +1,23 @@
 
 {
-      "nodeDataArray": [
-    {"key":1,"id_image":1, "name":"ali", "title":"CEO"},
-    {"key":2,"id_image":0, "name":"Luke Warm", "title":"VP Marketing/Sales", "parent":1},
-    {"key":3,"id_image":2, "name":"Meg Meehan Hoffa", "title":"Sales", "parent":1},
-    {"key":4,"id_image":4, "name":"Peggy Flaming", "title":"VP Engineering", "parent":1},
-    {"key":5,"id_image":7, "name":"Saul Wellingood", "title":"Manufacturing", "parent":1},
-    {"key":6,"id_image":6, "name":"Al Ligori", "title":"Marketing", "parent":2},
-    {"key":7,"id_image":5, "name":"Dot Stubadd", "title":"Sales Rep", "parent":3},
-    {"key":8,"id_image":1, "name":"Les Ismore", "title":"Project Mgr", "parent":5},
-    {"key":9,"id_image":4, "name":"April Lynn Parris", "title":"Events Mgr", "parent":6},
-    {"key":10,"id_image":7, "name":"Xavier Breath", "title":"Engineering", "parent":4},
-    {"key":11,"id_image":7, "name":"Anita Hammer", "title":"Process", "parent":5},
-    {"key":12,"id_image":2, "name":"Billy Aiken", "title":"Software", "parent":3},
-    {"key":13,"id_image":0, "name":"Stan Wellback", "title":"Testing", "parent":2},
-    {"key":13,"id_image":1, "name":"Marge Innovera", "title":"Hardware", "parent":1}
-
-     ]
-
-    }
-
-
+  "nodeDataArray": [
+{"key":1, "name":"Stella Payne Diaz", "title":"CEO"},
+{"key":2, "name":"Luke Warm", "title":"VP Marketing/Sales", "parent":1},
+{"key":3, "name":"Meg Meehan Hoffa", "title":"Sales", "parent":2},
+{"key":4, "name":"Peggy Flaming", "title":"VP Engineering", "parent":1},
+{"key":5, "name":"Saul Wellingood", "title":"Manufacturing", "parent":4},
+{"key":6, "name":"Al Ligori", "title":"Marketing", "parent":2},
+{"key":7, "name":"Dot Stubadd", "title":"Sales Rep", "parent":3},
+{"key":8, "name":"Les Ismore", "title":"Project Mgr", "parent":5},
+{"key":9, "name":"April Lynn Parris", "title":"Events Mgr", "parent":6},
+{"key":10, "name":"Xavier Breath", "title":"Engineering", "parent":4},
+{"key":11, "name":"Anita Hammer", "title":"Process", "parent":5},
+{"key":12, "name":"Billy Aiken", "title":"Software", "parent":10},
+{"key":13, "name":"Stan Wellback", "title":"Testing", "parent":10},
+{"key":14, "name":"Marge Innovera", "title":"Hardware", "parent":10},
+{"key":15, "name":"Evan Elpus", "title":"Quality", "parent":5},
+{"key":16, "name":"Lotta B. Essen", "title":"Sales Rep", "parent":3},
+{"key":17, "name":"Joaquin Closet", "title":"Wardrobe Assistant", "isAssistant":true, "parent":1},
+{"key":18, "name":"Hannah Twomey", "title":"Engineering Assistant", "parent":10, "isAssistant":true}
+ ]
+}
