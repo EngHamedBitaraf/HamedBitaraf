@@ -18,13 +18,13 @@ Item {
 //        }
 //        signal someSignal(string message);
 
-//        function someMetod(message){
-//            console.log(message);
-//            someSignal(message);
-//            return datamanager.getdata();
-//        }
+        function someMetod(){
+
+            return valueJson;
+        }
         ///get path json file  set  property  string hello
         property  var valueJson: datamanager.readjson()
+
         property string filedata: datamanager.getdata()
     }
     ///end
@@ -37,6 +37,7 @@ Item {
             anchors.fill:parent
                url: datamanager.htmlURL()
             webChannel: webChanel
+
 
         }
     }

@@ -27,7 +27,7 @@ QJsonValue DataManager::readjson()
           file.open(QIODevice::ReadOnly | QIODevice::Text);
           val = file.readAll();
           file.close();
-          qWarning() << val;
+          //qWarning() << val;
           QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
           QJsonObject sett2 = d.object();
           QJsonValue value = sett2.value(QString("nodeDataArray"));

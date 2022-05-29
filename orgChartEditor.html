@@ -8,6 +8,18 @@
   <div id="allSampleContent" class="p-4 w-full">
 
   <script id="code">
+  new QWebChannel(qt.webChannelTransport, function (channel) {
+      // all published objects are available in channel.objects under
+      // the identifier set in their attached WebChannel.id property
+           var jsonfile =channel.objects.foo;
+          var dManager = channel.objects.bar;
+
+          //myFullDiagram.model =new go.TreeModel(jsonfile.valueJson)
+
+           jQuery.getJSON(jsonfile.filedata,function(data){
+           myFullDiagram.model =new go.TreeModel(data)});
+
+      });
     function init() {
       // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
       // For details, see https://gojs.net/latest/intro/buildingObjects.html
@@ -40,9 +52,9 @@
 
 
       var pinkgrad = $(go.Brush, "Linear", { 0: "rgb(255, 0, 0)", 1: "rgb(255, 0, 0)" });
-      function genderBrushConverter(gender) {
-              if (parent === null) return pinkgrad;
-              return "blue";
+      function genderWidthConverter(id_image) {
+             if (id_image === null) return 400;
+             return 250;
             }
       // manage boss info manually when a node or link is deleted from the diagram
       myFullDiagram.addDiagramListener("SelectionDeleting", e => {
@@ -92,7 +104,7 @@
       // This function provides a common style for most of the TextBlocks.
       // Some of these values may be overridden in a particular TextBlock.
       function textStyle() {
-        return { font: "9pt  Segoe UI,sans-serif", stroke: "white" };
+        return { font: "8pt  Segoe UI,sans-serif", stroke: "black" };
       }
 
       // This converter is used by the Picture.
@@ -141,16 +153,19 @@
           // define the node's outer shape
           $(go.Shape, "RoundedRectangle",
             {
+                height: 100,
+                width :150,
               name: "SHAPE", fill: pinkgrad, stroke: 'white', strokeWidth: 3.5,
               // set the port properties:
               portId: "" ,cursor: "pointer"
             },
-             new go.Binding("fill", "parent", genderBrushConverter)),
+            new go.Binding("width","id_image",genderWidthConverter),
+             new go.Binding("fill", "color")),
           $(go.Panel, "Horizontal",
             $(go.Picture,
               {
                 name: "Picture",
-                desiredSize: new go.Size(70, 70),
+                desiredSize: new go.Size(50, 50),
                 margin: 1.5,
               },
               new go.Binding("source", "id_image", findHeadShot)),
@@ -166,7 +181,7 @@
               $(go.TextBlock, textStyle(),  // the name
                 {
                   row: 0, column: 0, columnSpan: 5,
-                  font: "12pt Segoe UI,sans-serif",
+                  font: "10pt Segoe UI,sans-serif",
                   editable: true, isMultiline: false,
                   minSize: new go.Size(10, 16)
                 },
@@ -267,7 +282,9 @@
         myFullDiagram.linkTemplate =
           $(go.Link, go.Link.Orthogonal,
             { corner: 20 },
-            $(go.Shape, { strokeWidth: 1.5, stroke: "#141B41" }));  // the link shape
+            $(go.Shape, { strokeWidth: 1.5, stroke: "#141B41" },
+            new go.Binding("stroke", "colorlink")
+            ));  // the link shape
 
 
 
@@ -276,29 +293,18 @@
         {
           properties: {
             "key": { readOnly: true },
+            "color": {readOnly:true},
             "id_image" : {readOnly: true},
             "name": { readOnly: true },
             "title": { readOnly: true },
             "parent": { readOnly: true },
+            "colorlink": {readOnly: true},
             "comments": {}
           }
         });
-        var foo;
-        new QWebChannel(qt.webChannelTransport, function (channel) {
-            // all published objects are available in channel.objects under
-            // the identifier set in their attached WebChannel.id property
-                foo =channel.objects.foo;
-                var dManager = channel.objects.bar;
 
-                 myFullDiagram.model =new go.TreeModel(foo.valueJson)
-
-                 //jQuery.getJSON(foo.filedata,function(data){
-                 //myFullDiagram.model =new go.TreeModel(data)});
-            });
 
       // read in the JSON-format data from the "mySavedModel" element
-
-
 
 
       // Setup zoom to fit button
