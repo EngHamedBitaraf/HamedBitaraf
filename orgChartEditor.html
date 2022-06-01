@@ -8,18 +8,7 @@
   <div id="allSampleContent" class="p-4 w-full">
 
   <script id="code">
-  new QWebChannel(qt.webChannelTransport, function (channel) {
-      // all published objects are available in channel.objects under
-      // the identifier set in their attached WebChannel.id property
-           var jsonfile =channel.objects.foo;
-          var dManager = channel.objects.bar;
-
-          //myFullDiagram.model =new go.TreeModel(jsonfile.valueJson)
-
-           jQuery.getJSON(jsonfile.filedata,function(data){
-           myFullDiagram.model =new go.TreeModel(data)});
-
-      });
+var jsonfile;
     function init() {
       // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
       // For details, see https://gojs.net/latest/intro/buildingObjects.html
@@ -342,6 +331,20 @@
         }
 
     window.addEventListener('DOMContentLoaded', init);
+    window.onload=function(){new QWebChannel(qt.webChannelTransport, function (channel) {
+        // all published objects are available in channel.objects under
+        // the identifier set in their attached WebChannel.id property
+             jsonfile =channel.objects.foo;
+            var dManager = channel.objects.bar;
+
+               myFullDiagram.model =new go.TreeModel(jsonfile.valueJson)
+
+             //jQuery.getJSON(jsonfile.filedata,function(data){
+             //myFullDiagram.model =new go.TreeModel(data)});
+
+        });
+
+        }
   </script>
 <style>
 input[type=search] {
