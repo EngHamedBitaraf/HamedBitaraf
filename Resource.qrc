@@ -14,5 +14,6 @@
         <file>image/Radar7.jpg</file>
         <file>data.json</file>
         <file>jquery-3.6.0.min.js</file>
+        <file>image/not_image.png</file>
     </qresource>
 </RCC>
