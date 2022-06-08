@@ -26,6 +26,8 @@ Item {
         property  var valueJson: datamanager.readjson()
 
         property string filedata: datamanager.getdata()
+        property string backgrand: datamanager.getBackgrand()
+        property string backdigram: datamanager.getBackdigram()
     }
     ///end
     ///create web view for dispalay file html in widget

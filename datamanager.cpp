@@ -6,6 +6,26 @@ DataManager::DataManager(QObject *parent) : QObject(parent)
 
 }
 
+QString DataManager::getBackgrand()
+{
+    return backgrand;
+}
+
+QString DataManager::getBackdigram()
+{
+    return backdigram;
+}
+
+void DataManager::setBackgrand(QString back)
+{
+    backgrand=back;
+}
+
+void DataManager::setBackdigram(QString back)
+{
+    backdigram= back;
+}
+
 QString DataManager::htmlURL ()
 {
     QString mes="qrc:/orgChartEditor.html";

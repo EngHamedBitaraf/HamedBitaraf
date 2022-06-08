@@ -1,14 +1,15 @@
 <!--  html file display tree-->
   <!DOCTYPE html>
   <html lang="en">
-  <body bgcolor="#92a8d1">
+  <body >
   <script type="text/javascript" src="qrc:/qwebchannel.js"></script>
   <script src="qrc:/go.js"></script>
   <script src="qrc:/jquery-3.6.0.min.js"></script>
   <div id="allSampleContent" class="p-4 w-full">
 
   <script id="code">
-var jsonfile;
+  //alert(backgrand)
+var fileobject;
     function init() {
       // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
       // For details, see https://gojs.net/latest/intro/buildingObjects.html
@@ -18,7 +19,8 @@ var jsonfile;
       myFullDiagram =
         $(go.Diagram, "myDiagramDiv", // must be the ID or reference to div
           {
-
+          initialDocumentSpot: go.Spot.Top,
+          initialViewportSpot: go.Spot.Top,
             maxSelectionCount: 1, // users can select only one part at a time
             layout:
               $(go.TreeLayout,
@@ -34,6 +36,7 @@ var jsonfile;
                   alternateAlignment: go.TreeLayout.AlignmentBus,
                   alternatePortSpot :new go.Spot(0.8,255,10,0),
                   alternateNodeSpacing: 20
+
                 }),
            "undoManager.isEnabled": true // enable undo & redo
           });
@@ -41,8 +44,8 @@ var jsonfile;
 
 
       var pinkgrad = $(go.Brush, "Linear", { 0: "rgb(255, 0, 0)", 1: "rgb(255, 0, 0)" });
-      function genderWidthConverter(id_image) {
-             if (id_image === null) return 400;
+      function genderWidthConverter(type) {
+             if (type === null) return 400;
              return 90;
             }
       // manage boss info manually when a node or link is deleted from the diagram
@@ -68,15 +71,13 @@ var jsonfile;
       });
 
 
-
-
-
 function tooltipTextConverter(person) {
        var str = "";
-       str += "titel: " + person.title;
-       str += "\nName :" + person.name;
-       if (person.key !== undefined) str += "\nID: " + person.key;
-       if (person.parent !== undefined) str += "\nBoss: " + person.parent;
+       if (person.parent !== undefined){
+       var boss = myFullDiagram.model.findNodeDataForKey(person.parent);
+       str += "\nParent: " + boss.name;
+       }
+       else str += "\nParent: " +"root";
        return str;
      }
 
@@ -101,8 +102,8 @@ function tooltipTextConverter(person) {
       }
 
       // This converter is used by the Picture.
-      function findHeadShot(id_image) {
-        return "qrc:/image/Radar" + id_image + ".jpg";
+      function findHeadShot(type) {
+        return "qrc:/image/Radar" + type + ".jpg";
       }
        function mayWorkFor(node1 , node2){
             if (!(node1 instanceof go.Node)) return false;
@@ -149,31 +150,54 @@ function tooltipTextConverter(person) {
             {
                 height: 80,
                 width :80,
-              name: "SHAPE", fill: pinkgrad, stroke: 'white', strokeWidth: 3.5,
+              name: "SHAPE", fill: pinkgrad, stroke: 'white', strokeWidth: 2,
               // set the port properties:
               portId: "" ,cursor: "pointer"
             },
             new go.Binding("stroke","colorborder"),
-            new go.Binding("height","id_image",genderWidthConverter),
+            new go.Binding("strokeWidth","isHighlighted",h=>h ? 5 : 2).ofObject(),
+            //new go.Binding("height","type",genderWidthConverter),
              new go.Binding("fill", "color")),
 
           $(go.Panel, "Vertical",
-
+          $(go.TextBlock, textStyle(),  // the name
+                          {
+                            row: 0, column: 0, columnSpan: 5,
+                            font: "10pt Segoe UI,sans-serif",
+                             isMultiline: true,
+                            minSize: new go.Size(10, 16)
+                          },
+                          new go.Binding("text", "name").makeTwoWay()),
             $(go.Picture,
               {
                 name: "Picture",
-                desiredSize: new go.Size(70, 70),
+                desiredSize: new go.Size(50, 50),
                 margin: 0.1,
                 source :"qrc:/image/not_image.png"
               },
-              new go.Binding("source", "id_image", findHeadShot)),
+              new go.Binding("source", "type", findHeadShot)),
 
 
 
             ), // end Horizontal Panel
-             $("TreeExpanderButton",{alignment :go.Spot.Bottom})
+             $("TreeExpanderButton",
+             {
+                     // set the two additional properties used by "TreeExpanderButton"
+                     // that control the shape depending on the value of Node.isTreeExpanded
+                     "_treeExpandedFigure": "TriangleUp",
+                     "_treeCollapsedFigure": "TriangleDown",
+                     // set properties on the icon within the border
+                     "ButtonIcon.fill": "darkcyan",
+                     "ButtonIcon.strokeWidth": 0,
+                     // set general "Button" properties
+                     "ButtonBorder.figure": "Circle",
+                     "ButtonBorder.stroke": "darkcyan",
+                     "_buttonStrokeOver": "darkcyan"
+                   },
+            {alignment :go.Spot.Bottom},
+            { visible: false }
+            )
         );  // end Node
-
 
         myFullDiagram.nodeTemplate = nodeTemplate;
 
@@ -237,6 +261,7 @@ function tooltipTextConverter(person) {
         // define the Link template
         myFullDiagram.linkTemplate =
           $(go.Link, go.Link.Orthogonal,
+          { toShortLength: 3, relinkableFrom: true, relinkableTo: true },
             { corner: 40 },
             $(go.Shape, { strokeWidth: 1.5, stroke: "#141B41" },
             new go.Binding("stroke", "colorlink")
@@ -250,7 +275,7 @@ function tooltipTextConverter(person) {
           properties: {
             "key": { readOnly: true },
             "color": {readOnly:true},
-            "id_image" : {readOnly: true},
+            "type" : {readOnly: true},
             "name": { readOnly: true },
             "title": { readOnly: true },
             "parent": { readOnly: true },
@@ -262,20 +287,21 @@ function tooltipTextConverter(person) {
 
       // read in the JSON-format data from the "mySavedModel" element
 
-
+myOverview =
+        $(go.Overview, "myOverviewDiv",  // the HTML DIV element for the Overview
+          { observed: myFullDiagram, contentAlignment: go.Spot.Center });
       // Setup zoom to fit button
       document.getElementById('zoomToFit').addEventListener('click', () => myFullDiagram.commandHandler.zoomToFit());
 
       document.getElementById('centerRoot').addEventListener('click', () => {
-        myFullDiagram.scale = 1;
+        myFullDiagram.scale = 2;
         myFullDiagram.commandHandler.scrollToPart(myFullDiagram.findNodeForKey(1));
       });
     } // end init
     function searchDiagram() {  // called by button
-          var input = document.getElementById("mySearch");
+    var input = document.getElementById("mySearch");
           if (!input) return;
           myFullDiagram.focus();
-
           myFullDiagram.startTransaction("highlight search");
 
           if (input.value) {
@@ -288,6 +314,8 @@ function tooltipTextConverter(person) {
               { title: regex },
               { headOf: regex });
             myFullDiagram.highlightCollection(results);
+            myFullDiagram.scale = 3;
+
             // try to center the diagram at the first node that was found
             if (results.count > 0) myFullDiagram.centerRect(results.first().actualBounds);
           } else {  // empty string only clears highlighteds collection
@@ -297,16 +325,18 @@ function tooltipTextConverter(person) {
           myFullDiagram.commitTransaction("highlight search");
         }
         window.addEventListener('DOMContentLoaded', init);
+
+
         window.onload=function(){new QWebChannel(qt.webChannelTransport, function (channel) {
             // all published objects are available in channel.objects under
             // the identifier set in their attached WebChannel.id property
-                 jsonfile =channel.objects.foo;
+                 fileobject =channel.objects.foo;
                 var dManager = channel.objects.bar;
-
-
-                   myFullDiagram.model =new go.TreeModel(jsonfile.valueJson)
-
-                 //jQuery.getJSON(jsonfile.filedata,function(data){
+                   document.body.style.backgroundColor = fileobject.backgrand;
+                   myFullDiagram.model =new go.TreeModel(fileobject.valueJson)
+                   var element = document.getElementById("myDiagramDiv");
+                   element.style.backgroundColor = fileobject.backdigram;
+                 //jQuery.getJSON(fileobject.filedata,function(data){
                  //myFullDiagram.model =new go.TreeModel(data)});
 
             });
@@ -316,6 +346,18 @@ function tooltipTextConverter(person) {
 
   </script>
 <style>
+#myOverviewDiv {
+      position: absolute;
+      width: 200px;
+      height: 100px;
+      top: 25px;
+      right: 25px;
+      background-color:#000000;
+      z-index: 10; /* make sure its in front */
+      border: solid 1px #7986cb;
+      border-radius:12px;
+      opacity: 0.6;
+    }
 input[type=search] {
   width: 80%;
   padding: 12px 20px;
@@ -356,7 +398,7 @@ input[type=search] {
     <div>
     <div id="myInspector" class="inspector"></div>
   </div>
-
+ <div id="myOverviewDiv" style="cursor: auto;"><canvas tabindex="0" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 198px; height: 98px; cursor: auto;" width="198" height="98">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 198px; height: 98px; z-index: 1;">
 
   </body>
   </html>
