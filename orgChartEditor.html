@@ -25,6 +25,7 @@ var fileobject;
             layout:
               $(go.TreeLayout,
                 {
+
                   treeStyle: go.TreeLayout.StyleLastParents,
                   arrangement: go.TreeLayout.ArrangementHorizontal,
                   // properties for most of the tree:
@@ -39,6 +40,7 @@ var fileobject;
 
                 }),
            "undoManager.isEnabled": true // enable undo & redo
+
           });
 
 
@@ -78,6 +80,7 @@ function tooltipTextConverter(person) {
        str += "\nParent: " + boss.name;
        }
        else str += "\nParent: " +"root";
+       if (person.name !== undefined) str += "\nName: " + person.name;
        return str;
      }
 
@@ -105,6 +108,7 @@ function tooltipTextConverter(person) {
       function findHeadShot(type) {
         return "qrc:/image/Radar" + type + ".jpg";
       }
+
        function mayWorkFor(node1 , node2){
             if (!(node1 instanceof go.Node)) return false;
             if (node1===node2) return false;
@@ -155,7 +159,7 @@ function tooltipTextConverter(person) {
               portId: "" ,cursor: "pointer"
             },
             new go.Binding("stroke","colorborder"),
-            new go.Binding("strokeWidth","isHighlighted",h=>h ? 5 : 2).ofObject(),
+            new go.Binding("strokeWidth","isHighlighted",h=>h ? 2 : 2).ofObject(),
             //new go.Binding("height","type",genderWidthConverter),
              new go.Binding("fill", "color")),
 
@@ -163,9 +167,9 @@ function tooltipTextConverter(person) {
           $(go.TextBlock, textStyle(),  // the name
                           {
                             row: 0, column: 0, columnSpan: 5,
-                            font: "10pt Segoe UI,sans-serif",
+                            font: "7pt Segoe UI,sans-serif",
                              isMultiline: true,
-                            minSize: new go.Size(10, 16)
+                            minSize: new go.Size(10, 10),
                           },
                           new go.Binding("text", "name").makeTwoWay()),
             $(go.Picture,
@@ -200,7 +204,6 @@ function tooltipTextConverter(person) {
         );  // end Node
 
         myFullDiagram.nodeTemplate = nodeTemplate;
-
 
       // the context menu allows users to make a position vacant,
       // remove a role and reassign the subtree, or remove a department
@@ -277,7 +280,6 @@ function tooltipTextConverter(person) {
             "color": {readOnly:true},
             "type" : {readOnly: true},
             "name": { readOnly: true },
-            "title": { readOnly: true },
             "parent": { readOnly: true },
             "colorlink": {readOnly: true},
             "comments": {}
@@ -294,8 +296,12 @@ myOverview =
       document.getElementById('zoomToFit').addEventListener('click', () => myFullDiagram.commandHandler.zoomToFit());
 
       document.getElementById('centerRoot').addEventListener('click', () => {
-        myFullDiagram.scale = 2;
-        myFullDiagram.commandHandler.scrollToPart(myFullDiagram.findNodeForKey(1));
+        myFullDiagram.scale = 3;
+        var node = myFullDiagram.findTreeRoots()
+        while (node.next()) {
+          keys=node.value;
+        }
+        myFullDiagram.commandHandler.scrollToPart(myFullDiagram.findNodeForKey(keys.key));
       });
     } // end init
     function searchDiagram() {  // called by button
@@ -314,7 +320,7 @@ myOverview =
               { title: regex },
               { headOf: regex });
             myFullDiagram.highlightCollection(results);
-            myFullDiagram.scale = 3;
+            myFullDiagram.scale = 4;
 
             // try to center the diagram at the first node that was found
             if (results.count > 0) myFullDiagram.centerRect(results.first().actualBounds);
@@ -334,6 +340,9 @@ myOverview =
                 var dManager = channel.objects.bar;
                    document.body.style.backgroundColor = fileobject.backgrand;
                    myFullDiagram.model =new go.TreeModel(fileobject.valueJson)
+                   myFullDiagram.findTreeRoots().each(function(n) { n.collapseTree(2);
+                     myFullDiagram.commandHandler.zoomToFit();
+                    });
                    var element = document.getElementById("myDiagramDiv");
                    element.style.backgroundColor = fileobject.backdigram;
                  //jQuery.getJSON(fileobject.filedata,function(data){
@@ -359,7 +368,7 @@ myOverview =
       opacity: 0.6;
     }
 input[type=search] {
-  width: 80%;
+  width: 50%;
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
@@ -392,9 +401,9 @@ input[type=search] {
 <p id="nodeDataArray"></p>
 <div id="sample">
   <div id="myDiagramDiv" style="background-color: rgb(136, 212, 152); border: 1px solid black; border-radius:12px;height: 570px; position: relative; cursor: auto;"><canvas tabindex="0" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 551px; cursor: auto;" width="1054" height="551">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 1054px; height: 568px; z-index: 1;"><div style="position: absolute; width: 1687.5px; height: 1px;"></div></div></div>
-  <p><button id="zoomToFit" class=btton>Zoom to Fit</button> <button id="centerRoot" class=btton>Center on root</button></p>
+  <p><button id="zoomToFit" class=btton>Zoom to Fit</button> <button id="centerRoot" class=btton>Center on root</button>
   <input id="mySearch" onkeypress="if (event.keyCode === 13) searchDiagram()" type="search">
-  <button class=btton onclick="searchDiagram()">Search</button>
+  <button class=btton onclick="searchDiagram()">Search</button></p>
     <div>
     <div id="myInspector" class="inspector"></div>
   </div>

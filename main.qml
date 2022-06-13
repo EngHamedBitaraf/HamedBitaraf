@@ -13,19 +13,9 @@ Item {
     QtObject{
         id:myobject
         objectName: "myobjrct"
-//        property var send: function(arg) {
-//            sendTextMessage(arg);
-//        }
-//        signal someSignal(string message);
 
-        function someMetod(){
-
-            return valueJson;
-        }
         ///get path json file  set  property  string hello
-        property  var valueJson: datamanager.readjson()
-
-        property string filedata: datamanager.getdata()
+        property  var valueJson: datamanager.getjson()
         property string backgrand: datamanager.getBackgrand()
         property string backdigram: datamanager.getBackdigram()
     }

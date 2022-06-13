@@ -10,21 +10,18 @@ class DataManager : public QObject
     Q_OBJECT
 public:
     explicit DataManager(QObject *parent = nullptr);
-    //address file display tree
-     QString path ="qrc:/data.json";
+     void setBackgrand(const QString back);
+     void setBackdigram(const QString back);
+     void setJosnArray(const QJsonArray arr);
+
+private:
      QString backgrand ="blue";
      QString backdigram= "red";
-
-     void setBackgrand(QString back);
-     void setBackdigram(QString back);
-
-signals:
-
+     QJsonValue valuejson;
 public slots:
      /// function slot for address html and  data path
      QString htmlURL();
-     QString getdata();
-     QJsonValue readjson();
+     QJsonValue getjson();
      QString getBackgrand();
      QString getBackdigram();
 
