@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
         {"type","1"},
         {"name","تهران"},
         {"title","CEO"},
-        {"parent",2},
+        {"parent",5},
      };
      QJsonArray arr;
      arr.append ( o1 );

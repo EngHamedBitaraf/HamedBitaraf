@@ -209,23 +209,21 @@ function tooltipTextConverter(person) {
       myFullDiagram.nodeTemplate.contextMenu =
         $("ContextMenu",
           $("ContextMenuButton",
-            $(go.TextBlock, "Vacate Position"),
+            $(go.TextBlock, "Name parent"),
             {
               click: (e, obj) => {
                 var node = obj.part.adornedPart;
                 if (node !== null) {
                   var thisemp = node.data;
                   myFullDiagram.startTransaction("vacate");
-                  // update the key, name, and comments
-                  myFullDiagram.model.setDataProperty(thisemp, "name", "(Vacant)");
-                  myFullDiagram.model.setDataProperty(thisemp, "comments", "");
-                  myFullDiagram.commitTransaction("vacate");
+                  var boss = myFullDiagram.model.findNodeDataForKey(thisemp.parent);
+                  alert(boss.name)
                 }
               }
             }
           ),
           $("ContextMenuButton",
-            $(go.TextBlock, "Remove Role"),
+            $(go.TextBlock, "Childeren"),
             {
               click: (e, obj) => {
                 // reparent the subtree to this node's boss, then remove the node
@@ -234,13 +232,14 @@ function tooltipTextConverter(person) {
                   myFullDiagram.startTransaction("reparent remove");
                   var chl = node.findTreeChildrenNodes();
                   // iterate through the children and set their parent key to our selected node's parent key
-                  while (chl.next()) {
+                   let i=0;
+                   var childparent=[]
+                   while (chl.next()) {
                     var emp = chl.value;
-                    myFullDiagram.model.setParentKeyForNodeData(emp.data, node.findTreeParentNode().data.key);
-                  }
-                  // and now remove the selected node itself
-                  myFullDiagram.model.removeNodeData(node.data);
-                  myFullDiagram.commitTransaction("reparent remove");
+                     childparent[i]=emp.data.name;
+                       i++;
+                    }
+                    alert(childparent)
                 }
               }
             }
@@ -339,13 +338,20 @@ myOverview =
                 var dManager = channel.objects.bar;
                    document.body.style.backgroundColor = fileobject.backgrand;
                    myFullDiagram.model =new go.TreeModel(fileobject.valueJson)
-                   myFullDiagram.findTreeRoots().each(function(n) { n.collapseTree(2);
+                   //var c= myFullDiagram.nodes().findTreeLevel();
+
+                   //alert(nodesLevels)
+                   myFullDiagram.findTreeRoots().each(function(n) {
+
+                    for(var i=3;i > 1;i--){
+                    n.collapseTree(i);
+                    //n.collapseTree();
+                    }
                      myFullDiagram.commandHandler.zoomToFit();
                     });
                    var element = document.getElementById("myDiagramDiv");
                    element.style.backgroundColor = fileobject.backdigram;
-                 //jQuery.getJSON(fileobject.filedata,function(data){
-                 //myFullDiagram.model =new go.TreeModel(data)});
+
 
             });
 
@@ -370,7 +376,7 @@ myOverview =
     }
 
 input[type=search] {
-  width: 100%;
+  width: 90%;
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
@@ -445,7 +451,7 @@ input[type=search] {
   <div id="myDiagramDiv" class=digram></div>
   <p><button id="zoomToFit" class=btton>Zoom to Fit</button> <button id="centerRoot" class=bton >Center on root</button></p>
   <from><input id="mySearch" placeholder="Search.." onkeypress="if (event.keyCode === 13) searchDiagram()" type="search"></from>
-  <center><p><button class=btton onclick="searchDiagram()">Search</button></p><center>
+  <button class=btton onclick="searchDiagram()">Search</button>
     <div id="myInspector" class="inspector"></div>
  <div id="myOverviewDiv" style="cursor: auto;"><canvas tabindex="0" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 198px; height: 98px; cursor: auto;" width="198" height="98">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 198px; height: 98px; z-index: 1;">
 
