@@ -1,7 +1,6 @@
 <!--  html file display tree-->
   <!DOCTYPE html>
   <html lang="en">
-  <body >
   <script type="text/javascript" src="qrc:/qwebchannel.js"></script>
   <script src="qrc:/go.js"></script>
   <script src="qrc:/jquery-3.6.0.min.js"></script>
@@ -21,7 +20,7 @@ var fileobject;
           {
           initialDocumentSpot: go.Spot.Top,
           initialViewportSpot: go.Spot.Top,
-            maxSelectionCount: 1, // users can select only one part at a time
+            maxSelectionCount: 5, // users can select only one part at a time
             layout:
               $(go.TreeLayout,
                 {
@@ -355,6 +354,7 @@ myOverview =
 
   </script>
 <style>
+
 #myOverviewDiv {
       position: absolute;
       width: 200px;
@@ -366,9 +366,11 @@ myOverview =
       border: solid 1px #7986cb;
       border-radius:12px;
       opacity: 0.6;
+
     }
+
 input[type=search] {
-  width: 50%;
+  width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
@@ -386,6 +388,7 @@ input[type=search] {
         text-align:Center;
         text-decoration:none;
         display:inline-block;
+
         font-Size: 12px;
         border-radius:12px;
         transition-duration:1s
@@ -397,16 +400,53 @@ input[type=search] {
         box-shadow: 0 12px 16px 0 rgba(84,92,82,0.80),0 17px 50px 0 rgba(76,175,80,0.19)
 
     }
+    .btton:focus {
+    border: none;
+    outline: 0;
+  }
+  .bton {
+      background-color:#CBA135;
+      border:none;
+      float:right;
+      color:white;
+      padding:15px 32px;
+      text-align:Center;
+      text-decoration:none;
+      display:inline-block;
+
+      font-Size: 12px;
+      border-radius:12px;
+      transition-duration:1s
+  }
+  .bton:hover{
+      background-color:#FFFFFF;
+      color:black;
+      border:2px solid #CBA135;
+      box-shadow: 0 12px 16px 0 rgba(84,92,82,0.80),0 17px 50px 0 rgba(76,175,80,0.19)
+
+  }
+  .bton:focus {
+  border: none;
+  outline: 0;
+}
+    .digram{
+        background-color: rgb(136, 212, 152);
+        border: 1px solid black;
+        border-radius:12px;
+        height: 570px;
+        position: relative;
+        cursor: auto;
+    }
+
+
 </style>
 <p id="nodeDataArray"></p>
 <div id="sample">
-  <div id="myDiagramDiv" style="background-color: rgb(136, 212, 152); border: 1px solid black; border-radius:12px;height: 570px; position: relative; cursor: auto;"><canvas tabindex="0" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 551px; cursor: auto;" width="1054" height="551">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 1054px; height: 568px; z-index: 1;"><div style="position: absolute; width: 1687.5px; height: 1px;"></div></div></div>
-  <p><button id="zoomToFit" class=btton>Zoom to Fit</button> <button id="centerRoot" class=btton>Center on root</button>
-  <input id="mySearch" onkeypress="if (event.keyCode === 13) searchDiagram()" type="search">
-  <button class=btton onclick="searchDiagram()">Search</button></p>
-    <div>
+  <div id="myDiagramDiv" class=digram></div>
+  <p><button id="zoomToFit" class=btton>Zoom to Fit</button> <button id="centerRoot" class=bton >Center on root</button></p>
+  <from><input id="mySearch" placeholder="Search.." onkeypress="if (event.keyCode === 13) searchDiagram()" type="search"></from>
+  <center><p><button class=btton onclick="searchDiagram()">Search</button></p><center>
     <div id="myInspector" class="inspector"></div>
-  </div>
  <div id="myOverviewDiv" style="cursor: auto;"><canvas tabindex="0" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 198px; height: 98px; cursor: auto;" width="198" height="98">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 198px; height: 98px; z-index: 1;">
 
   </body>

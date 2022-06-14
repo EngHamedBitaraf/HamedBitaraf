@@ -7,6 +7,7 @@
 #include <QWidget>
 #include <QQmlContext>
 #include <QQmlEngine>
+#include "datamanager.h"
 /////////////////
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,5 +27,6 @@ private:
     QQuickView *view;
     // class widget for display qml
     QWidget *qmlwidget;
+    DataManager *d;
 };
 #endif // MAINWINDOW_H

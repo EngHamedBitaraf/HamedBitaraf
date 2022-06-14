@@ -6,6 +6,8 @@ import QtWebChannel 1.0
 ///main qml
 Item {
     anchors.fill: parent
+
+
     WebChannel{
         id : webChanel
     }
@@ -15,9 +17,9 @@ Item {
         objectName: "myobjrct"
 
         ///get path json file  set  property  string hello
-        property  var valueJson: datamanager.getjson()
-        property string backgrand: datamanager.getBackgrand()
-        property string backdigram: datamanager.getBackdigram()
+        property  var valueJson: Datamanager.getjson()
+        property string backgrand: Datamanager.getBackgrand()
+        property string backdigram: Datamanager.getBackdigram()
     }
     ///end
     ///create web view for dispalay file html in widget
@@ -27,7 +29,7 @@ Item {
         WebEngineView{
             id:webEngine
             anchors.fill:parent
-               url: datamanager.htmlURL()
+               url: Datamanager.htmlURL()
             webChannel: webChanel
 
 
@@ -37,7 +39,7 @@ Item {
     //use mainqml and datamanager in htmlfile to use qwebchanel.js
     Component.onCompleted: {
         webChanel.registerObject("foo",myobject)
-        webChanel.registerObject("bar",datamanager)
+        webChanel.registerObject("bar",Datamanager)
     }
 
 

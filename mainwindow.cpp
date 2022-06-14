@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
         {"type","1"},
         {"name","سمنان"},
         {"title","CEO"},
-        {"parent",1},
+        {"parent",2},
      };
     QJsonObject o5
      {
@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
         {"type","1"},
         {"name","تهران"},
         {"title","CEO"},
-        {"parent",1},
+        {"parent",2},
      };
      QJsonArray arr;
      arr.append ( o1 );
@@ -81,15 +81,14 @@ MainWindow::MainWindow(QWidget *parent)
      arr.append ( o5 );
      arr.append(o6);
     ///dispaly qml
-    DataManager *d=new DataManager;
+    d=new DataManager();
     d->setJosnArray(arr);
     d->setBackdigram("#383b4d");
     d->setBackgrand("#2e355f");
     /// get file main.qml
-    //Context->setContextProperty("datamanager",d);
     view= new QQuickView(QUrl(QLatin1String("qrc:/main.qml")));
     /// set data class datamanager to main qml
-    view->engine()->rootContext()->setContextProperty("datamanager",d);
+    view->engine()->rootContext()->setContextProperty("Datamanager",d);
     ///set qml to widget
     qmlwidget=QWidget::createWindowContainer(view);
     /// horizontalLayout creat in ui

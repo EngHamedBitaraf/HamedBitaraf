@@ -1,4 +1,4 @@
-QT       += core gui quick quickcontrols2 quickwidgets
+QT       += core gui quick quickcontrols2 quickwidgets webengine
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

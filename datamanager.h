@@ -8,8 +8,9 @@
 class DataManager : public QObject
 {
     Q_OBJECT
+
 public:
-    explicit DataManager(QObject *parent = nullptr);
+    explicit DataManager(QObject *parent=nullptr);
      void setBackgrand(const QString back);
      void setBackdigram(const QString back);
      void setJosnArray(const QJsonArray arr);

@@ -1,7 +1,7 @@
 #include "datamanager.h"
 #include <QFile>
 #include <QtCore>
-DataManager::DataManager(QObject *parent) : QObject(parent)
+DataManager::DataManager(QObject *parent):QObject(parent)
 {
 }
 
