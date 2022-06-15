@@ -73,6 +73,72 @@ MainWindow::MainWindow(QWidget *parent)
         {"title","CEO"},
         {"parent",5},
      };
+    QJsonObject o7
+     {
+         { "key", 7 },
+         { "colorborder", "#234324" },
+         { "color", "red" },
+        {"colorlink","green"},
+        {"type","1"},
+        {"name","تهران"},
+        {"title","CEO"},
+        {"parent",5},
+     };
+    QJsonObject o8
+     {
+         { "key", 8 },
+         { "colorborder", "#234324" },
+         { "color", "red" },
+        {"colorlink","green"},
+        {"type","1"},
+        {"name","تهران"},
+        {"title","CEO"},
+        {"parent",6},
+     };
+    QJsonObject o9
+     {
+         { "key", 9 },
+         { "colorborder", "#234324" },
+         { "color", "red" },
+        {"colorlink","green"},
+        {"type","1"},
+        {"name","تهران"},
+        {"title","CEO"},
+        {"parent",8},
+     };
+    QJsonObject o10
+     {
+         { "key", 10 },
+         { "colorborder", "#234324" },
+         { "color", "red" },
+        {"colorlink","green"},
+        {"type","1"},
+        {"name","تهران"},
+        {"title","CEO"},
+        {"parent",8},
+     };
+    QJsonObject o11
+     {
+         { "key", 11 },
+         { "colorborder", "#234324" },
+         { "color", "red" },
+        {"colorlink","green"},
+        {"type","1"},
+        {"name","تهران"},
+        {"title","CEO"},
+        {"parent",10},
+     };
+    QJsonObject o12
+     {
+         { "key", 6 },
+         { "colorborder", "#234324" },
+         { "color", "red" },
+        {"colorlink","green"},
+        {"type","1"},
+        {"name","تهران"},
+        {"title","CEO"},
+        {"parent",5},
+     };
      QJsonArray arr;
      arr.append ( o1 );
      arr.append ( o2 );
@@ -80,11 +146,18 @@ MainWindow::MainWindow(QWidget *parent)
      arr.append ( o4 );
      arr.append ( o5 );
      arr.append(o6);
+     arr.append(o7);
+     arr.append(o8);
+     arr.append(o9);
+     arr.append(o10);
+     arr.append(o11);
+     arr.append(o12);
     ///dispaly qml
     d=new DataManager();
     d->setJosnArray(arr);
     d->setBackdigram("#383b4d");
     d->setBackgrand("#2e355f");
+    d->setfont(15);
     /// get file main.qml
     view= new QQuickView(QUrl(QLatin1String("qrc:/main.qml")));
     /// set data class datamanager to main qml

@@ -89,7 +89,7 @@ function tooltipTextConverter(person) {
          { "Border.fill": "whitesmoke", "Border.stroke": "black" },
          $(go.TextBlock,
            {
-             font: "bold 8pt Helvetica, bold Arial, sans-serif",
+             font: "bold 10pt Helvetica, bold Arial, sans-serif",
              wrap: go.TextBlock.WrapFit,
              margin: 5
            },
@@ -100,7 +100,7 @@ function tooltipTextConverter(person) {
       // This function provides a common style for most of the TextBlocks.
       // Some of these values may be overridden in a particular TextBlock.
       function textStyle() {
-        return { font: "8pt  Segoe UI,sans-serif", stroke: "black" };
+        return { font: "10pt  Segoe UI,sans-serif", stroke: "black" };
       }
 
       // This converter is used by the Picture.
@@ -203,6 +203,7 @@ function tooltipTextConverter(person) {
         );  // end Node
 
         myFullDiagram.nodeTemplate = nodeTemplate;
+        ////////////////////////////////
 
       // the context menu allows users to make a position vacant,
       // remove a role and reassign the subtree, or remove a department
@@ -217,7 +218,7 @@ function tooltipTextConverter(person) {
                   var thisemp = node.data;
                   myFullDiagram.startTransaction("vacate");
                   var boss = myFullDiagram.model.findNodeDataForKey(thisemp.parent);
-                  alert(boss.name)
+                  fileobject.getParent(boss.name)
                 }
               }
             }
@@ -239,7 +240,7 @@ function tooltipTextConverter(person) {
                      childparent[i]=emp.data.name;
                        i++;
                     }
-                    alert(childparent)
+                    fileobject.getChilderen(childparent)
                 }
               }
             }
@@ -259,6 +260,25 @@ function tooltipTextConverter(person) {
             }
           )
         );
+        ////////////////////////////////
+
+// also define a context menu for the diagram's background
+myFullDiagram.contextMenu =
+  $("ContextMenu",
+    $("ContextMenuButton",
+      $(go.TextBlock, "Undo"),
+      { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
+      new go.Binding("visible", "", function(o) {
+                                        return o.diagram.commandHandler.canUndo();
+                                      }).ofObject()),
+    $("ContextMenuButton",
+      $(go.TextBlock, "Redo"),
+      { click: function(e, obj) { e.diagram.commandHandler.redo(); } },
+      new go.Binding("visible", "", function(o) {
+                                        return o.diagram.commandHandler.canRedo();
+                                      }).ofObject()),
+    // no binding, always visible button:
+  );
         // define the Link template
         myFullDiagram.linkTemplate =
           $(go.Link, go.Link.Orthogonal,
@@ -285,9 +305,8 @@ function tooltipTextConverter(person) {
         });
 
 
-      // read in the JSON-format data from the "mySavedModel" element
-
-myOverview =
+////////////////////////////////////////////////////
+        myOverview =
         $(go.Overview, "myOverviewDiv",  // the HTML DIV element for the Overview
           { observed: myFullDiagram, contentAlignment: go.Spot.Center });
       // Setup zoom to fit button
@@ -302,6 +321,7 @@ myOverview =
         myFullDiagram.commandHandler.scrollToPart(myFullDiagram.findNodeForKey(keys.key));
       });
     } // end init
+    ///////////////////////////////////////////////////
     function searchDiagram() {  // called by button
     var input = document.getElementById("mySearch");
           if (!input) return;
@@ -329,21 +349,70 @@ myOverview =
           myFullDiagram.commitTransaction("highlight search");
         }
         window.addEventListener('DOMContentLoaded', init);
-
+//////////////////////////////////////////////////////////////////////////////
 
         window.onload=function(){new QWebChannel(qt.webChannelTransport, function (channel) {
             // all published objects are available in channel.objects under
             // the identifier set in their attached WebChannel.id property
                  fileobject =channel.objects.foo;
-                var dManager = channel.objects.bar;
                    document.body.style.backgroundColor = fileobject.backgrand;
                    myFullDiagram.model =new go.TreeModel(fileobject.valueJson)
-                   //var c= myFullDiagram.nodes().findTreeLevel();
+                    ///////////////////////////////////////////
+                    function flattenIterator(collection) {
+                        const items = [];
+                        var it = collection.iterator;
+                        while (it.next()) {
+                          items.push(it.value);
+                        }
 
-                   //alert(nodesLevels)
+                        return items;
+                      }
+////////////////////////////////////////////////////////////////////////////
+                     const graph = {};
+                     myFullDiagram.nodes.each(node => {
+                       graph[node.data.key] = flattenIterator(node.findNodesOutOf());
+                     });
+
+                     function getNodesLevels(diagram) {
+                       const treeLevels = {};
+
+                       var nodeIterator = diagram.nodes.iterator;
+                       while (nodeIterator.next()) {
+                         findNodeLevel(graph, nodeIterator.value, treeLevels);
+                       }
+
+                       const maxLevel = Math.max(...Object.values(treeLevels));
+
+                       return maxLevel;
+                     }
+
+                     function findNodeLevel(graph, node, levels) {
+                       const key = node.data.key;
+
+                       if (!Object.keys(levels).includes(key)) {
+                         const childNode = graph[key];
+                         if (!childNode) {
+                           levels[key] = 0
+                         } else {
+                           if (childNode.length) {
+                             const childrenLevels = childNode.map(child => findNodeLevel(graph, child, levels) + 1);
+                             levels[key] = Math.max(...childrenLevels);
+                           } else {
+                             levels[key] = 0;
+                           }
+                         }
+                       }
+
+                       return levels[key];
+                     }
+
+                      nodesLevels = getNodesLevels(myFullDiagram);
+
+
+                   /////////////////////////////////////////////
                    myFullDiagram.findTreeRoots().each(function(n) {
 
-                    for(var i=3;i > 1;i--){
+                    for(var i=nodesLevels;i > 1;i--){
                     n.collapseTree(i);
                     //n.collapseTree();
                     }
@@ -351,10 +420,8 @@ myOverview =
                     });
                    var element = document.getElementById("myDiagramDiv");
                    element.style.backgroundColor = fileobject.backdigram;
-
-
+                 ///////////////////////////////////////////////////
             });
-
             };
 
 

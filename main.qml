@@ -15,11 +15,21 @@ Item {
     QtObject{
         id:myobject
         objectName: "myobjrct"
+        ///function get getparent . get childeren
+            function getChilderen(array){
+                //console.log(array)
+                Datamanager.getChildren(array);
+            }
+            function getParent(str){
+                Datamanager.getparent(str);
+            }
 
         ///get path json file  set  property  string hello
         property  var valueJson: Datamanager.getjson()
         property string backgrand: Datamanager.getBackgrand()
         property string backdigram: Datamanager.getBackdigram()
+        property int font: Datamanager.getfont()
+
     }
     ///end
     ///create web view for dispalay file html in widget

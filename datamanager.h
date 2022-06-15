@@ -14,17 +14,24 @@ public:
      void setBackgrand(const QString back);
      void setBackdigram(const QString back);
      void setJosnArray(const QJsonArray arr);
+     void  setfont(const int font);
 
 private:
      QString backgrand ="blue";
      QString backdigram= "red";
      QJsonValue valuejson;
+     int font =8;
 public slots:
      /// function slot for address html and  data path
-     QString htmlURL();
-     QJsonValue getjson();
-     QString getBackgrand();
-     QString getBackdigram();
+     QString htmlURL() const;
+     QJsonValue getjson() const;
+     QString getBackgrand() const;
+     QString getBackdigram() const;
+     int getfont() const;
+     Q_INVOKABLE void getparent(const QString str);
+    Q_INVOKABLE void getChildren(const QList<QString> &data);
+
+
 
 
 };
