@@ -1,7 +1,7 @@
 import QtQuick 2.13
 import QtQuick.Window 2.13
 import QtWebView 1.1
-import QtWebEngine 1.8
+import QtWebEngine 1.10
 import QtWebChannel 1.0
 ///main qml
 Item {

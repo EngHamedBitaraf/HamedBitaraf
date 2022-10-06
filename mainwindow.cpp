@@ -159,9 +159,12 @@ MainWindow::MainWindow(QWidget *parent)
     d->setBackgrand("#2e355f");
     d->setfont(15);
     /// get file main.qml
-    view= new QQuickView(QUrl(QLatin1String("qrc:/main.qml")));
+    view= new QQuickView();
+    QQmlContext *context =  view->rootContext();
+    context->setContextProperty("Datamanager",d);
+    view->setSource(QUrl("qrc:/main.qml"));
     /// set data class datamanager to main qml
-    view->engine()->rootContext()->setContextProperty("Datamanager",d);
+    //view->engine()->rootContext()->setContextProperty("Datamanager",d);
     ///set qml to widget
     qmlwidget=QWidget::createWindowContainer(view);
     /// horizontalLayout creat in ui
